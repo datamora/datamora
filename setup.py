@@ -8,13 +8,13 @@ long_description = '\n\n'.join([
 ])
 
 setup(
-    name = "data-server",
+    name = "datamora",
     version = version,
-    description = "Capture data that is relevant and timely.",
+    description = "Capture time in bits.",
     long_description = long_description,
     author = "FLC Ltd.",
     author_email = "contact@flcltd.com",
-    url = 'http://data.flcltd.com',
+    url = 'http://datamora.com',
     license = "MIT",
     keywords = ['python', 'data', 'daeta', 'server', 'capture'],
     classifiers = [
@@ -30,7 +30,7 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Topic :: Database'
     ],
-    py_modules = ['data_server'],
+    py_modules = ['datamora'],
     zip_safe = False,
     install_requires = ['bottle'],
 )

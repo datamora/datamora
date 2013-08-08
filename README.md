@@ -1,2 +1,4 @@
-data-server
-===========
+Datamora
+=========
+
+Capture time in bits.
