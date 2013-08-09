@@ -16,7 +16,7 @@ setup(
     author_email = "contact@flcltd.com",
     url = 'http://datamora.com',
     license = "MIT",
-    keywords = ['python', 'data', 'daeta', 'server', 'capture'],
+    keywords = ['python', 'datamora', 'data', 'mora', 'server', 'capture', 'time', 'bits'],
     classifiers = [
         'Development Status :: 1 - Planning',
         'Environment :: Console',

@@ -1,3 +1,5 @@
+*.pyc
+
 # Packages
 dist
 build
