@@ -32,5 +32,6 @@ setup(
     ],
     py_modules = ['datamora'],
     zip_safe = False,
-    install_requires = ['bottle'],
+    install_requires = ['bottle>=0.11', 'pyyaml'],
+    dependency_links = ['https://github.com/defnull/bottle/tarball/master#egg=bottle-0.12-dev']
 )
