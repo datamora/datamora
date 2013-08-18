@@ -22,7 +22,7 @@ def create_app(custom_config=None, host_app=None):
     @app.get('/')
     @view('index')
     def get_streams():
-        return ', '.join(db.keys())
+        return {'streams': db.keys()}
 
     @app.get('/stream/<name>')
     def get_stream(name):

@@ -22,15 +22,24 @@ class MountAdapter:
         self.path = mount_def['path']
         self.config = mount_def.get('config')
         self.app = None
+        self.meta = None
 
     def apply(self, target):
         target.mount(self.path, self.load_app())
 
-    def register_views(self):
-        register_app_views(self.load_app())
-
     def load_app(self):
         return self.app
+
+    def register_views(self):
+        """Adds the given path to the list of bottle template paths"""
+        print ' ************* '
+        if not self.meta.views_dir: return
+
+        views_dir = self.meta.views_dir
+        print 'dir ', views_dir
+        if (os.path.exists(views_dir)):
+            bottle.TEMPLATE_PATH.append(views_dir)
+            print bottle.TEMPLATE_PATH
 
 
 class PluggableMountAdapter(MountAdapter):
@@ -40,6 +49,7 @@ class PluggableMountAdapter(MountAdapter):
             return self.app
         module = bottle.load(self.ref)
         self.app = module.create_app(self.config)
+        self.meta = get_module_metadata(module)
         return self.app
 
 
@@ -63,6 +73,16 @@ class MixinMountAdapter(MountAdapter):
 
     def load_app(self):
         pass
+
+
+class ModuleMetadata():
+    def __init__(self, package_dir):
+        self.views_dir = self._get_views_dir(package_dir)
+
+    def _get_views_dir(self, package_dir):
+        if package_dir:
+            return os.path.abspath(os.path.join(package_dir, 'views'))
+        return None
 
 
 def extend(parent, mounts):
@@ -89,25 +109,7 @@ def get_mount_adapter(mount_def):
     return PluggableMountAdapter(mount_def)
 
 
-def register_app_views(app):
-    """Checks to see if the app has a `root_path` property.
-    If yes, then it registers the path to the app views dir
-    """
-    root_path = _get_app_root_path(app)
-    if root_path:
-        views_dir = os.path.abspath(os.path.join(root_path, 'views'))
-        print views_dir
-        register_views_dir(views_dir)
+def get_module_metadata(module):
+    module_path = getattr(module, '__path__', [None])[0]
+    return ModuleMetadata(module_path)
 
-
-def register_views_dir(path):
-    """Adds the given path to the list of bottle template paths"""
-    if (os.path.exists(path)):
-        bottle.TEMPLATE_PATH.append(path)
-
-
-def _get_app_root_path(app):
-    try:
-        return app.__path__
-    except:
-        return None
