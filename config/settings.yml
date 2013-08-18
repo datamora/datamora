@@ -1,10 +1,9 @@
 mounts:
   -
-    # here we mount the pluggable app `bar` as-is
-    'path': '/bar'
-    'ref': 'apps.bar'
+    path: /debug
+    ref: apps.config_debugger
+    config:
+        scan: data
   -
-    # same `bar` app except this time with custom config
-    'path': '/other-bar'
-    'ref': 'apps.bar'
-    'config': 'other-1.yml'
+    path: /streams
+    ref: apps.streams
