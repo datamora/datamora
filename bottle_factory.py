@@ -5,7 +5,7 @@ bottle.ext.factory
 bottle-factory aims to provide some pattarns for building and using
 pluggable apps to augment your own root apps.
 
-:copyright: (c) 2011-2013 by Rudy Lattae.
+:copyright: (c) 2011-2013 by FLC Ltd.
 :license: BSD, see LICENSE.txt for more details.
 """
 
@@ -24,7 +24,7 @@ class MountAdapter:
         self.app = None
 
     def apply(self, target):
-        target.mount(self.load_app(), self.path)
+        target.mount(self.path, self.load_app())
 
     def register_views(self):
         register_app_views(self.load_app())
@@ -96,6 +96,7 @@ def register_app_views(app):
     root_path = _get_app_root_path(app)
     if root_path:
         views_dir = os.path.abspath(os.path.join(root_path, 'views'))
+        print views_dir
         register_views_dir(views_dir)
 
 
@@ -107,6 +108,6 @@ def register_views_dir(path):
 
 def _get_app_root_path(app):
     try:
-        return app.root_path
+        return app.__path__
     except:
         return None

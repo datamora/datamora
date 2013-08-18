@@ -11,16 +11,10 @@ with open('config/settings.yml') as f:
     print settings
     extend(app, settings['mounts'])
 
-    app.config.load_dict(config)
-
 
 @app.get('/hello/<name>')
 def index(name='World'):
-    return template('<b>Hello {{name}}</b>!', name=name)
-
-@app.get('/debug')
-def debug():
-    return template('<pre>{{config}}</pre>', config=request.app.config)
+    return template('<b>Hello {{name}}</b>!', name=name) 
 
 
 if __name__ == '__main__':
