@@ -1,2 +1,1 @@
 include README.md MIT.LICENSE CHANGES.md
-recursive-include apps/fois/views *
