@@ -32,7 +32,6 @@ class MountAdapter:
 
     def register_views(self):
         """Adds the given path to the list of bottle template paths"""
-        print ' ************* '
         if not self.meta.views_dir: return
 
         views_dir = self.meta.views_dir

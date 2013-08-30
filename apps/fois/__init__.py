@@ -22,6 +22,9 @@ from bottle import Bottle, view, request, HTTPError
 from bottling.db import persistence
 from .models import Stream, Event, Entry
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 def create_app(custom_config=None, host_app=None):
     app = host_app if host_app else Bottle()
@@ -32,14 +35,13 @@ def create_app(custom_config=None, host_app=None):
     def get_streams(db):
         streams = []
         key = request.query.key or None
-
         if key:
             stream = db.query(Stream).filter_by(key=key).first()
             streams.append({'id': stream.id, 'key': stream.key, 'name': stream.name})
         else: 
             streams = [_stream_to_resource(stream) for stream in db.query(Stream).all()]
-
-        return {'streams': streams}
+        
+        return dict(streams=streams)
 
     @app.get('/stream/<id>')
     def get_stream(id, db):
