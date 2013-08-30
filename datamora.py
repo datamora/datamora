@@ -2,14 +2,19 @@ import yaml
 from bottle import Bottle, debug, run
 from bottling.factory import extend
 
+import logging
+logging.basicConfig(level=logging.INFO)
+
 
 app = Bottle()
 
 with open('config/settings.yml') as f:
     settings = yaml.load(f)
-
-    print settings
     extend(app, settings['mounts'])
+
+
+logging.debug('here')
+logging.warning('bad')
 
 
 if __name__ == '__main__':

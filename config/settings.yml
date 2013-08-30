@@ -6,4 +6,4 @@ mounts:
         scan: data
   -
     path: /streams
-    ref: apps.streams
+    ref: apps.fois
