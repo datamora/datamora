@@ -35,10 +35,8 @@ class MountAdapter:
         if not self.meta.views_dir: return
 
         views_dir = self.meta.views_dir
-        print 'dir ', views_dir
         if (os.path.exists(views_dir)):
             bottle.TEMPLATE_PATH.append(views_dir)
-            print bottle.TEMPLATE_PATH
 
 
 class PluggableMountAdapter(MountAdapter):
