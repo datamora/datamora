@@ -34,7 +34,6 @@ def create_app(custom_config=None, host_app=None):
     @view('index')
     def get_streams(db):
         c = TimeSeriesController(db)
-
         key = request.query.key or None
 
         if key:
@@ -45,18 +44,22 @@ def create_app(custom_config=None, host_app=None):
     @app.post('/')
     def post_stream(db):
         c = TimeSeriesController(db)
+
         stream_dto = _stream_dto_from_request(request)
         id = c.create_stream(stream_dto)
+
         response.status = '201 Created'
         response.set_header('Location', '/stream/%s' % id)
 
     @app.get('/stream/<id>')
     def get_stream(id, db):
-        stream = db.query(Stream).filter_by(id=id).first()
-        if stream:
-            return _stream_to_resource(stream)
-        return HTTPError(404, 'Stream not found.')
+        c = TimeSeriesController(db)
 
+        stream = c.get_stream_by_id(id)
+        if not stream:
+            return HTTPError(404, 'Stream not found.')
+        return stream
+        
     return app
 
 

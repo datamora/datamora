@@ -14,8 +14,14 @@ class TimeSeriesController(object):
     def get_stream_by_key(self, key):
         streams = []
         stream = self.db.query(Stream).filter_by(key=key).first()
-        streams.append(stream_to_resource(stream))
+        streams.append(stream_to_dto(stream))
         return streams
+
+    def get_stream_by_id(self, id):
+        stream = self.db.query(Stream).filter_by(id=id).first()
+        if stream:
+            return stream_to_dto(stream) 
+        return None
 
     def create_stream(self, stream_dto):
         stream = Stream(key=stream_dto['key'], name=stream_dto['name'], description=stream_dto['description'])
@@ -24,6 +30,6 @@ class TimeSeriesController(object):
         return stream.id
 
 
-def stream_to_resource(stream):
+def stream_to_dto(stream):
     return {'id': stream.id, 'key': stream.key, 'name': stream.name}
 

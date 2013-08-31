@@ -6,7 +6,7 @@ from bottling.persistence import Base
 class Stream(Base):
     __tablename__ = 'streams'
     id = Column(Integer, Sequence('id_seq'), primary_key=True)
-    key = Column(String(255))
+    key = Column(String(255), unique=True)
     name = Column(String(255))
     description = Column(Text)
 
@@ -33,6 +33,7 @@ class Event(Base):
 
     def __repr__(self):
         return "<Event('%d', '%s', '%s')>" % (self.id, self.ts, self.value)
+
 
 class Entry(Base):
     __tablename__ = 'entries'
