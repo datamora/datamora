@@ -1,6 +1,6 @@
 import datetime
 from sqlalchemy import Column, Integer, Sequence, String, Text, DateTime
-from bottling.db import Base
+from bottling.persistence import Base
 
 
 class Stream(Base):
