@@ -32,7 +32,8 @@ class MountAdapter:
 
     def register_views(self):
         """Adds the given path to the list of bottle template paths"""
-        if not self.meta.views_dir: return
+        if not self.meta.views_dir:
+            return
 
         views_dir = self.meta.views_dir
         if (os.path.exists(views_dir)):
@@ -109,4 +110,3 @@ def get_mount_adapter(mount_def):
 def get_module_metadata(module):
     module_path = getattr(module, '__path__', [None])[0]
     return ModuleMetadata(module_path)
-

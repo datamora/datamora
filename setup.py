@@ -1,4 +1,3 @@
-import os
 from setuptools import setup
 
 version = '0.1dev'
@@ -8,16 +7,16 @@ long_description = '\n\n'.join([
 ])
 
 setup(
-    name = "datamora",
-    version = version,
-    description = "Capture time in bits.",
-    long_description = long_description,
-    author = "FLC Ltd.",
-    author_email = "contact@flcltd.com",
-    url = 'http://datamora.com',
-    license = "MIT",
-    keywords = ['python', 'datamora', 'data', 'mora', 'server', 'capture', 'time', 'bits'],
-    classifiers = [
+    name="datamora",
+    version=version,
+    description="Capture time in bits.",
+    long_description=long_description,
+    author="FLC Ltd.",
+    author_email="contact@flcltd.com",
+    url='http://datamora.com',
+    license="MIT",
+    keywords=['python', 'datamora', 'data', 'mora', 'server', 'capture', 'time', 'bits'],
+    classifiers=[
         'Development Status :: 1 - Planning',
         'Environment :: Console',
         'Environment :: Web Environment',
@@ -30,10 +29,10 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Topic :: Database'
     ],
-    py_modules = ['datamora'],
-    packages = ['apps', 'apps.fois', 'bottling'],
-    package_data = {'apps.fois': ['views/*']},
-    zip_safe = False,
-    install_requires = ['bottle>=0.11', 'bottle-sqlalchemy==0.4', 'SQLAlchemy==0.8.2', 'pyyaml'],
-    dependency_links = ['https://github.com/defnull/bottle/tarball/master#egg=bottle-0.12-dev']
+    py_modules=['datamora'],
+    packages=['apps', 'apps.fois', 'bottling'],
+    package_data={'apps.fois': ['views/*']},
+    zip_safe=False,
+    install_requires=['bottle>=0.11', 'bottle-sqlalchemy==0.4', 'SQLAlchemy==0.8.2', 'pyyaml'],
+    dependency_links=['https://github.com/defnull/bottle/tarball/master#egg=bottle-0.12-dev']
 )

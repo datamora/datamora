@@ -13,14 +13,14 @@ app = Bottle()
 # load and apply settings
 settings = configure.from_dir('config')
 
-if settings.has_key('logging'):
+if 'logging' in settings:
     logging.config.dictConfig(settings.get('logging'))
 
 # get our logger going
 log = logging.getLogger(__name__)
 
 
-if settings.has_key('mounts'):
+if 'mounts' in settings:
     log.info('mounting apps...')
     extend(app, settings.get('mounts'))
 
