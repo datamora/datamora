@@ -4,8 +4,7 @@ Debug
 
 Loads and dsiplay config info that is used by running app.
 """
-from bottle import Bottle, request
-import bottle
+from bottle import Bottle
 
 
 def create_app(custom_config=None, host_app=None):
