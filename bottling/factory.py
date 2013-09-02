@@ -17,10 +17,11 @@ class MountAdapter:
     """Base adapter handling app mounts. It defines common/core
     functionality that may be overridden by more specific implementations.
     """
-    def __init__(self, mount_def):
+    def __init__(self, mount_def, global_settings):
         self.ref = mount_def['ref']
         self.path = mount_def['path']
-        self.config = mount_def.get('config')
+        self.instance_config = mount_def.get('config')
+        self.global_settings = global_settings
         self.app = None
         self.meta = None
 
@@ -46,7 +47,11 @@ class PluggableMountAdapter(MountAdapter):
         if self.app:
             return self.app
         module = bottle.load(self.ref)
-        self.app = module.create_app(self.config)
+        try:
+            self.app = module.app
+        except AttributeError:
+            pass
+        self.app = module.create_app(self.instance_config, self.global_settings)
         self.meta = get_module_metadata(module)
         return self.app
 
@@ -57,8 +62,8 @@ class SingletonMountAdapter(MountAdapter):
         if self.app:
             return self.app
         app = bottle.load_app(self.ref)
-        if app and self.config:
-            app.config.update(self.config)
+        if app and self.instance_config:
+            app.config.update(self.instance_config)
         self.app = app
         return self.app
 
@@ -67,10 +72,16 @@ class MixinMountAdapter(MountAdapter):
     """Adapter for mixin app mount"""
     def apply(self, target):
         module = bottle.load(self.ref)
-        module.create_app(self.config, target)
+        module.create_app(self.instance_config, self.global_settings, target)
 
     def load_app(self):
         pass
+
+
+class MergeMountAdapter(PluggableMountAdapter):
+    """Adapter for merge app mount"""
+    def apply(self, target):
+        target.merge(self.load_app())
 
 
 class ModuleMetadata():
@@ -83,13 +94,13 @@ class ModuleMetadata():
         return None
 
 
-def extend(parent, mounts):
+def extend(parent, mounts, settings):
     """Given a list of mount definitions, it extends the parent app
     with each app depending on the type of mount point defined.
     """
     for mount_def in mounts:
         # get an appropriate mount adapter
-        adapter = get_mount_adapter(mount_def)
+        adapter = get_mount_adapter(mount_def, settings)
 
         # apply the adapter to the parent app
         adapter.apply(parent)
@@ -98,13 +109,15 @@ def extend(parent, mounts):
         adapter.register_views()
 
 
-def get_mount_adapter(mount_def):
+def get_mount_adapter(mount_def, settings):
     """Returns an appropriate mount adapter for the given definition."""
     if mount_def.get('type') == 'singleton':
-        return SingletonMountAdapter(mount_def)
+        return SingletonMountAdapter(mount_def, settings)
     if mount_def.get('type') == 'mixin':
-        return MixinMountAdapter(mount_def)
-    return PluggableMountAdapter(mount_def)
+        return MixinMountAdapter(mount_def, settings)
+    if mount_def.get('type') == 'merge':
+        return MergeMountAdapter(mount_def, settings)
+    return PluggableMountAdapter(mount_def, settings)
 
 
 def get_module_metadata(module):
