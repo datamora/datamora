@@ -18,16 +18,20 @@ Entry:
     - timestamp (auto set if not available)
     - note (text)
 """
+import logging
 from bottle import Bottle, view, request, response, HTTPError
 from bottling.persistence import storage
 from .controllers import TimeSeriesController
 
-import logging
+
 logger = logging.getLogger(__name__)
 
+def create_app(config=None, settings=None):
+    app = Bottle()
 
-def create_app(custom_config=None, host_app=None):
-    app = host_app if host_app else Bottle()
+    if config:
+        app.config.update(config)
+    
     app.install(storage)
 
     @app.get('/')

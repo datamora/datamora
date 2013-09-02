@@ -1,9 +1,0 @@
-mounts:
-  -
-    path: /debug
-    ref: apps.config_debugger
-    config:
-        scan: data
-  -
-    path: /streams
-    ref: apps.fois

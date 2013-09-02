@@ -1,0 +1,5 @@
+datastores:
+    default:
+        type: sqlalchemy
+        engine: "sqlite:///:memory:"
+        enable_logs: True
