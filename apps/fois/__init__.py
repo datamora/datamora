@@ -20,7 +20,7 @@ Entry:
 """
 import logging
 from bottle import Bottle, view, request, response, HTTPError
-from bottling.persistence import storage
+from bottling.persistence import datastores
 from .controllers import TimeSeriesController
 
 
@@ -32,7 +32,7 @@ def create_app(config=None, settings=None):
     if config:
         app.config.update(config)
     
-    app.install(storage)
+    app.install(datastores.sqlalchemy.plugin)
 
     @app.get('/')
     @view('index')
