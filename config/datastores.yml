@@ -5,7 +5,7 @@ datastores:
         config:
             engine:
                 dsn: "sqlite:///:memory:"
-                echo: True
+                echo: False
             plugin:
                 keyword: db
                 create: False
