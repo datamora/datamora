@@ -1,6 +1,10 @@
 import datetime
 from sqlalchemy import Column, Integer, Sequence, String, Text, DateTime
-from bottling.persistence import Base
+# from bottling.persistence import Base
+from bottling.persistence import datastores
+
+
+Base = datastores.sqlalchemy.Base
 
 
 class Stream(Base):

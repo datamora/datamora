@@ -2,7 +2,11 @@ import os
 import yaml
 
 
-class Configure(object):
+# global settings
+settings = {}
+
+
+class ConfigLoader(object):
     def __init__(self):
         self._cache = {}
 
@@ -13,20 +17,27 @@ class Configure(object):
             if cached:
                 return cached
 
-        settings = {}
+        values = {}
         for config_file in os.listdir(_abs(dir_name)):
             s = self.from_file(_abs(config_file, dir_name))
             if s:
-                settings.update(s)
+                values.update(s)
 
-        self._cache[cache_key] = settings
-        return settings
+        self._cache[cache_key] = values
+        return values
 
     def from_file(self, file_name):
         with open(file_name) as f:
             return yaml.load(f)
 
-configure = Configure()
+
+"""Default instance of :class:`ConfigLoader` used by `configure`"""
+default_loader = ConfigLoader()
+
+def load_settings(config_dir):
+    """Loads the configuration from the `config_dir` into the global `settings`"""
+    global settings
+    settings = default_loader.from_dir(config_dir)
 
 
 def _abs(name, prefix=None):

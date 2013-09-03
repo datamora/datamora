@@ -1,5 +1,13 @@
 datastores:
-    default:
-        type: sqlalchemy
-        engine: "sqlite:///:memory:"
-        enable_logs: True
+    -
+        name: sqlalchemy
+        ref: bottling.persistence.sqlalchemy_adapter
+        config:
+            engine:
+                dsn: "sqlite:///:memory:"
+                echo: True
+            plugin:
+                keyword: db
+                create: False
+                commit: True
+                use_kwargs: True
