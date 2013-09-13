@@ -33,6 +33,8 @@ setup(
     packages=['apps', 'apps.fois', 'bottling'],
     package_data={'apps.fois': ['views/*']},
     zip_safe=False,
-    install_requires=['bottle>=0.11', 'bottle-sqlalchemy==0.4', 'SQLAlchemy==0.8.2', 'pyyaml'],
-    dependency_links=['https://github.com/defnull/bottle/tarball/master#egg=bottle-0.12-dev']
+    install_requires=['bottle>=0.11', 'SQLAlchemy==0.8.2', 'pyyaml'],
+    dependency_links=[
+        'https://github.com/defnull/bottle/tarball/master#egg=bottle-0.12-dev'
+    ]
 )

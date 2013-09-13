@@ -18,7 +18,7 @@ class DatastoreManager(object):
     def init(self):
         for key in self.__dict__:
             ds = self.__dict__[key]
-            ds.init()
+            # ds.init()
 
 datastores = DatastoreManager()
 
@@ -29,6 +29,17 @@ def setup_datastores(datastore_definitions):
         module = bottle.load(definition['ref'])
         ds = module.create_datastore(definition['config'])
         datastores.register(definition['name'], ds)
+
+def get_datastores(datastore_definitions):
+    datastores = DatastoreManager()
+
+    for name in datastore_definitions:
+        definition = datastore_definitions[name]
+        module = bottle.load(definition['ref'])
+        ds = module.create_datastore(definition['config'])
+        datastores.register(name, ds)
+
+    return datastores
 
 def init_datastores():
     datastores.init()

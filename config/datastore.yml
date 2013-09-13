@@ -1,6 +1,5 @@
-datastores:
-    -
-        name: sqlalchemy
+datastore:
+    master:
         ref: bottling.persistence.sqlalchemy_adapter
         config:
             engine:

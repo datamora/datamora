@@ -5,17 +5,17 @@ Home Page
 from bottle import Bottle
 
 
-def create_app(config=None, settings=None):
-    app = Bottle()
+DEFAULT_SETTINGS = {
+    "title": "Welcome!!!",
+    "message": "It's alive!!!!!!!"
+}
 
-    if config:
-        app.config.update(config)
+app = Bottle()
+app.config.update(DEFAULT_SETTINGS)
 
-    @app.route('/')
-    def index():
-        return """
-        <h1>Welcome...</h1>
-        <p>It's alive!!!</p>
-        """
-
-    return app
+@app.route('/')
+def index():
+    return """
+    <h1>{{title}}</h1>
+    <p>{{message}}</p>
+    """ % (app.config['title'], app.config['message'])

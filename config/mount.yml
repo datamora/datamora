@@ -1,0 +1,15 @@
+mount:
+  -
+    path: /debug
+    ref: apps.config_debugger
+    config:
+        scan: data
+  -
+    path: /streams
+    ref: 'apps.fois'
+    inject:
+        datastore: $master
+  -
+    path: /
+    ref: apps.index:app
+    kind: merge
