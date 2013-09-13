@@ -20,19 +20,20 @@ Entry:
 """
 import logging
 from bottle import Bottle, view, request, response, HTTPError
-from bottling.persistence import datastores
+from .models import Base
 from .controllers import TimeSeriesController
 
 
 logger = logging.getLogger(__name__)
 
-def create_app(config=None, settings=None):
+def create_app(config, datastore):
     app = Bottle()
 
     if config:
         app.config.update(config)
     
-    app.install(datastores.sqlalchemy.plugin)
+    app.install(datastore.plugin)
+    _init_db(datastore.engine)
 
     @app.get('/')
     @view('index')
@@ -66,6 +67,9 @@ def create_app(config=None, settings=None):
         
     return app
 
+
+def _init_db(engine):
+    Base.metadata.create_all(engine)
 
 def _stream_dto_from_request(request):
     key = request.POST.get('key')

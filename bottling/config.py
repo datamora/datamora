@@ -34,10 +34,10 @@ class ConfigLoader(object):
 """Default instance of :class:`ConfigLoader` used by `configure`"""
 default_loader = ConfigLoader()
 
-def load_settings(config_dir):
+def load_settings(config_dir, force=False):
     """Loads the configuration from the `config_dir` into the global `settings`"""
     global settings
-    settings = default_loader.from_dir(config_dir)
+    settings = default_loader.from_dir(config_dir, force)
 
 
 def _abs(name, prefix=None):

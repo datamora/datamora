@@ -8,12 +8,8 @@ class SQLAlchemyDatastore(object):
         engine_config = config['engine']
         plugin_config = config['plugin']
 
-        self.Base = declarative_base()
         self.engine = self.create_engine(engine_config)
         self.plugin = self.create_plugin(self.engine, plugin_config)
-
-    def init(self):
-        self.Base.metadata.create_all(self.engine)
 
     def db(self):
         session = self.plugin.create_session()

@@ -1,0 +1,4 @@
+sqlalchemy:
+    master:
+        dsn: "sqlite:///:memory:"
+        echo: False

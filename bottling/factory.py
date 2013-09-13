@@ -13,15 +13,51 @@ import os
 import bottle
 
 
-class MountAdapter:
+# Mounts
+# ===========================
+
+class Mount(object):
+    """A mount object. Describes a mount point based on provided 
+    mount point definition."""
+
+    def __init__(self, mount_def):
+        self.path = mount_def['path']
+        self.ref = mount_def['ref']
+        self.kind = mount_def.get('kind')
+        self.config = mount_def.get('config')
+        self.inject = mount_def.get('inject')
+
+
+class BottlePluggableAppLoader(object):
+    """Uses bottle to load bottle-based wsgi apps"""
+    def __init__(self, ref, kind=None, config=None):
+        self.ref = ref
+        self.kind = kind
+
+    def load(self):
+        module = bottle.load(self.ref)
+        return module.create_app()
+        
+
+class MountAdapter(object):
     """Base adapter handling app mounts. It defines common/core
     functionality that may be overridden by more specific implementations.
+
+    Example mount def::
+
+        path: /hello
+        ref: apps.greeter
+        config:
+            style: serious
+        inject:
+            datastore: $master
+        type: merge
     """
-    def __init__(self, mount_def, global_settings):
-        self.ref = mount_def['ref']
-        self.path = mount_def['path']
-        self.instance_config = mount_def.get('config')
-        self.global_settings = global_settings
+
+    def __init__(self, mount, app_loader, deps_resolver):
+        self.mount = mount
+        self.loader = app_loader
+        self.resolver = deps_resolver
         self.app = None
         self.meta = None
 
@@ -29,6 +65,11 @@ class MountAdapter:
         target.mount(self.path, self.load_app())
 
     def load_app(self):
+        if self.app:
+            return self.app
+        app, module = self.app_loader.load(self.ref)
+
+        self.meta = self.get_module_metadata(module)
         return self.app
 
     def register_views(self):
@@ -43,7 +84,7 @@ class MountAdapter:
 
 class PluggableMountAdapter(MountAdapter):
     """Adapter for pluggable app mount"""
-    def load_app(self):
+    def load_app(self, config=None, deps=None):
         if self.app:
             return self.app
         module = bottle.load(self.ref)
@@ -51,28 +92,28 @@ class PluggableMountAdapter(MountAdapter):
             self.app = module.app
         except AttributeError:
             pass
-        self.app = module.create_app(self.instance_config, self.global_settings)
+        self.app = module.create_app(self.config, **self.resolve(deps))
         self.meta = get_module_metadata(module)
         return self.app
 
 
 class SingletonMountAdapter(MountAdapter):
     """Adapter for singleton app mount"""
-    def load_app(self):
+    def load_app(self, config=None):
         if self.app:
             return self.app
         app = bottle.load_app(self.ref)
-        if app and self.instance_config:
-            app.config.update(self.instance_config)
+        if app and config:
+            app.config.update(config)
         self.app = app
         return self.app
 
 
 class MixinMountAdapter(MountAdapter):
     """Adapter for mixin app mount"""
-    def apply(self, target):
+    def apply(self, target, config=None):
         module = bottle.load(self.ref)
-        module.create_app(self.instance_config, self.global_settings, target)
+        module.create_app(self.instance_config, target)
 
     def load_app(self):
         pass
@@ -94,19 +135,31 @@ class ModuleMetadata():
         return None
 
 
-def extend(parent, mounts, settings):
+# Adapter registry
+# ====================
+
+class AdapterRegistry(object):
+    def register(self, adapter):
+        pass
+
+
+def mount_all(parent, mount_defs, app_loader, deps_resolver):
     """Given a list of mount definitions, it extends the parent app
     with each app depending on the type of mount point defined.
     """
-    for mount_def in mounts:
-        # get an appropriate mount adapter
-        adapter = get_mount_adapter(mount_def, settings)
+    for mount_def in mount_defs:
+        mount(parent, mount_def, resolver)
 
-        # apply the adapter to the parent app
-        adapter.apply(parent)
 
-        # register any views the referenced app may have
-        adapter.register_views()
+def mount(parent, mount_def, app_loader, deps_resolver):
+    # get an appropriate mount adapter
+    adapter = get_mount_adapter(mount_def, app_loader, deps_resolver)
+
+    # apply the adapter to the parent app
+    adapter.apply(parent)
+
+    # register any views the referenced app may have
+    adapter.register_views()
 
 
 def get_mount_adapter(mount_def, settings):

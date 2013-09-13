@@ -1,10 +1,9 @@
 import datetime
 from sqlalchemy import Column, Integer, Sequence, String, Text, DateTime
-# from bottling.persistence import Base
-from bottling.persistence import datastores
+from sqlalchemy.ext.declarative import declarative_base
 
 
-Base = datastores.sqlalchemy.Base
+Base = declarative_base()
 
 
 class Stream(Base):
@@ -20,7 +19,10 @@ class Stream(Base):
         self.description = description
 
     def __repr__(self):
-        return "<Stream('%d', '%s', '%s')>" % (self.id, self.key, self.name)
+        if self.has_attr('id'): 
+            return "<Stream('%d', '%s', '%s')>" % (self.id, self.key, self.name)
+        else:
+            return "<Stream('%s', '%s')>" % (self.key, self.name)
 
 
 class Event(Base):
