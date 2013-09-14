@@ -1,4 +1,5 @@
 from compare import expect
+import fudge
 from bottling.factory import Mount, BottlePluggableAppLoader, MountAdapter
 
 
@@ -40,8 +41,15 @@ class DescribeBottlePluggableAppLoader(object):
         expect(loader.kind).to_be(None)
 
 class DescribeBottlePluggableAppLoader_load(object):
-    def it_loads_the_app_given_no_instance_config_and_runtime_dependencies(self):
-        loader = BottlePluggableAppLoader(ref='my:app')
+    @fudge.patch('bottle.load')
+    def it_loads_the_app_given_no_instance_config_and_runtime_dependencies(self, bottle_load):
+        app_ref = 'my:app'
+        loaded_module = fudge.Fake('module').provides('create_app').returns({})
+        (bottle_load
+            .expects_call()
+            .with_args(app_ref)
+            .returns(loaded_module))
+        loader = BottlePluggableAppLoader(ref=app_ref)
 
         app = loader.load()
 
