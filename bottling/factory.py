@@ -79,7 +79,7 @@ class MountAdapter(object):
 # =========================================================
 
 class BottlePluggableAppLoader(object):
-    """Uses bottle to load bottle-based wsgi apps"""
+    """Uses `bottle.load` to load bottle-based wsgi apps"""
     def __init__(self, ref, kind=None, config=None):
         self.ref = ref
         self.kind = kind
@@ -87,6 +87,18 @@ class BottlePluggableAppLoader(object):
     def load(self):
         module = bottle.load(self.ref)
         return module.create_app()
+
+
+class BottleSingletonAppLoader(object):
+    """Uses `bottle.load_app` to load bottle-based wsgi apps"""
+    def __init__(self, ref, kind=None, config=None):
+        self.ref = ref
+        self.kind = kind
+
+    def load(self):
+        app = bottle.load_app(self.ref)
+        return app
+        
 
 
 

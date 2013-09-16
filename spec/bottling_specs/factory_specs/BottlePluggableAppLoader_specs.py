@@ -5,7 +5,7 @@ from bottling.factory import BottlePluggableAppLoader
 class describe_init:
 
     def it_initializes_with_given_options(self):
-        ref = 'my.app:app'
+        ref = 'my_module'
         kind = None
         
         loader = BottlePluggableAppLoader(ref, kind)
@@ -18,7 +18,7 @@ class describe_load:
     
     @fudge.patch('bottle.load')
     def given_no_config_and_runtime_dependencies(self, bottle_load):
-        app_ref = 'my:app'
+        app_ref = 'my_module'
         loaded_module = fudge.Fake('module').provides('create_app').returns({})
         (bottle_load
             .expects_call()
