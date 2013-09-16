@@ -1,5 +1,5 @@
 flake8==2.0
-checkit==0.3.2b
 fudge==1.0.3
+https://bitbucket.org/rudylattae/checkit/get/tip.tar.gz#egg=checkit==0.3.3b
 https://github.com/rudylattae/compare/tarball/master#egg=compare==0.2b
 https://github.com/iurisilvio/bottle-sqlalchemy/tarball/master#egg=bottle-sqlalchemy-0.3.1

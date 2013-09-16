@@ -13,8 +13,9 @@ import os
 import bottle
 
 
-# Mounts
-# ===========================
+# =========================================================
+# Mount Definition and Adapter
+# =========================================================
 
 class Mount(object):
     """A mount object. Describes a mount point based on provided 
@@ -26,17 +27,6 @@ class Mount(object):
         self.kind = mount_def.get('kind')
         self.config = mount_def.get('config')
         self.inject = mount_def.get('inject')
-
-
-class BottlePluggableAppLoader(object):
-    """Uses bottle to load bottle-based wsgi apps"""
-    def __init__(self, ref, kind=None, config=None):
-        self.ref = ref
-        self.kind = kind
-
-    def load(self):
-        module = bottle.load(self.ref)
-        return module.create_app()
         
 
 class MountAdapter(object):
@@ -80,6 +70,24 @@ class MountAdapter(object):
         views_dir = self.meta.views_dir
         if (os.path.exists(views_dir)):
             bottle.TEMPLATE_PATH.append(views_dir)
+
+
+
+
+# =========================================================
+# App loaders
+# =========================================================
+
+class BottlePluggableAppLoader(object):
+    """Uses bottle to load bottle-based wsgi apps"""
+    def __init__(self, ref, kind=None, config=None):
+        self.ref = ref
+        self.kind = kind
+
+    def load(self):
+        module = bottle.load(self.ref)
+        return module.create_app()
+
 
 
 class PluggableMountAdapter(MountAdapter):
@@ -135,8 +143,7 @@ class ModuleMetadata():
         return None
 
 
-# Adapter registry
-# ====================
+
 
 class AdapterRegistry(object):
     def register(self, adapter):
