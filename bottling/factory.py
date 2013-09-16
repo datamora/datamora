@@ -41,7 +41,6 @@ class MountAdapter(object):
             style: serious
         inject:
             datastore: $master
-        type: merge
     """
 
     def __init__(self, mount, app_loader, deps_resolver):
@@ -71,6 +70,10 @@ class MountAdapter(object):
         if (os.path.exists(views_dir)):
             bottle.TEMPLATE_PATH.append(views_dir)
 
+
+class MergeMountAdapter(MountAdapter):
+    pass
+        
 
 
 
