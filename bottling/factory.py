@@ -57,8 +57,6 @@ class MountAdapter(object):
         if self._app:
             return self._app
         self._app = self._loader.load(self._mount.ref)
-        # self.meta = self.get_module_metadata(module)
-        # return self._app
         return self._app
 
     def register_views(self):
