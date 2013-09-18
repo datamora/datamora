@@ -1,0 +1,14 @@
+apps:
+  root: 
+    ref: apps.index:app
+  mounts:
+    -
+      path: /streams
+      ref: 'apps.fois'
+      inject:
+          datastore: $master
+    -
+      path: /debug
+      ref: apps.config_debugger
+      config:
+          scan: data

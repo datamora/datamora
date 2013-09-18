@@ -69,6 +69,7 @@ class MountAdapter(object):
         #     bottle.TEMPLATE_PATH.append(views_dir)
         pass
 
+
 class MergeMountAdapter(MountAdapter):
     pass
         
@@ -163,12 +164,18 @@ class AdapterRegistry(object):
         pass
 
 
-def mount_all(parent, mount_defs, app_loader, deps_resolver):
-    """Given a list of mount definitions, it extends the parent app
-    with each app depending on the type of mount point defined.
+def compose(composition_defs, app_loader, deps_resolver):
+    """Given a list of mount definitions, it creates an app by 
+    extending the root app with additional apps depending on the type 
+    of mount point defined.
     """
+    root_app_def = composition_defs['root']
+    mount = Mount(root_app_def)
+    root_app = get_mount_adapter(mount, app_loader, deps_resolver)
+
+    mount_defs = composition_defs['mounts']
     for mount_def in mount_defs:
-        mount(parent, mount_def, resolver)
+        root_app.attach(moun)
 
 
 def mount(parent, mount_def, app_loader, deps_resolver):
