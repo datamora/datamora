@@ -44,29 +44,30 @@ class MountAdapter(object):
     """
 
     def __init__(self, mount, app_loader, deps_resolver):
-        self.mount = mount
-        self.loader = app_loader
-        self.resolver = deps_resolver
-        self.app = None
-        self.meta = None
+        self._mount = mount
+        self._loader = app_loader
+        self._resolver = deps_resolver
+        self._app = None
+        self._meta = None
 
     def apply(self, target):
         target.mount(self.path, self.load_app())
 
     def load_app(self):
-        if self.app:
-            return self.app
-        app, module = self.app_loader.load(self.ref)
+        # if self._app:
+        #     return self._app
+        app = self._loader.load(self._mount.ref)
 
-        self.meta = self.get_module_metadata(module)
-        return self.app
+        # self.meta = self.get_module_metadata(module)
+        # return self._app
+        return app
 
     def register_views(self):
         """Adds the given path to the list of bottle template paths"""
-        if not self.meta.views_dir:
+        if not self._meta.views_dir:
             return
 
-        views_dir = self.meta.views_dir
+        views_dir = self._meta.views_dir
         if (os.path.exists(views_dir)):
             bottle.TEMPLATE_PATH.append(views_dir)
 
