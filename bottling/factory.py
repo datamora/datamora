@@ -54,23 +54,22 @@ class MountAdapter(object):
         target.mount(self.path, self.load_app())
 
     def load_app(self):
-        # if self._app:
-        #     return self._app
-        app = self._loader.load(self._mount.ref)
-
+        if self._app:
+            return self._app
+        self._app = self._loader.load(self._mount.ref)
         # self.meta = self.get_module_metadata(module)
         # return self._app
-        return app
+        return self._app
 
     def register_views(self):
         """Adds the given path to the list of bottle template paths"""
-        if not self._meta.views_dir:
-            return
+        # if not self._meta.views_dir:
+        #     return
 
-        views_dir = self._meta.views_dir
-        if (os.path.exists(views_dir)):
-            bottle.TEMPLATE_PATH.append(views_dir)
-
+        # views_dir = self._meta.views_dir
+        # if (os.path.exists(views_dir)):
+        #     bottle.TEMPLATE_PATH.append(views_dir)
+        pass
 
 class MergeMountAdapter(MountAdapter):
     pass
