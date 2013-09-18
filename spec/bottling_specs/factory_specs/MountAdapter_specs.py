@@ -54,3 +54,11 @@ class describe_load_app:
 
         assert app1 == app2
 
+
+# class describe_apply:
+
+#     def it_mounts_the_referenced_app_on_the_target_at_the_given_path(self):
+
+#         adapter = MountAdapter(a_mount, fake_loader, fake_resolver)
+
+#         adapter.mount(target_app, path)
