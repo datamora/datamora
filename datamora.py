@@ -34,10 +34,10 @@ if 'datastore' in settings:
 
 
 # create root app and mount sub apps
-root = app = Bottle()
-if 'app' in settings:
-    log.info('mounting apps...')
-    extend(root, settings.get('app'), settings)
+app = None
+if 'apps' in settings:
+    log.info('composing apps...')
+    app = compose(settings.get('apps'), settings)
 
 
 # initialize datastores
