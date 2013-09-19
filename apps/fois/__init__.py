@@ -32,8 +32,8 @@ def create_app(config, datastore):
     if config:
         app.config.update(config)
     
-    app.install(datastore.plugin)
-    _init_db(datastore.engine)
+    # app.install(datastore.plugin)
+    # _init_db(datastore.engine)
 
     @app.get('/')
     @view('index')

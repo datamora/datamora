@@ -1,11 +1,11 @@
 import fudge
-from bottling.factory import Mount, MountAdapter
+from bottling.factory import MountPointDescriptor, MountAdapter
 
 
 class describe_init:
     
     def it_initializes_with_given_options(self):
-        a_mount = Mount(dict(path='/', ref='dummy_app'))
+        a_mount = MountPointDescriptor(dict(path='/', ref='dummy_app'))
         def fake_loader():
             pass
         def fake_resolver():
@@ -13,7 +13,7 @@ class describe_init:
 
         adapter = MountAdapter(a_mount, fake_loader, fake_resolver)
 
-        assert adapter._mount == a_mount
+        assert adapter._mount_point == a_mount
         assert adapter._loader == fake_loader
         assert adapter._resolver == fake_resolver
 
@@ -22,7 +22,7 @@ class describe_load_app:
 
     @fudge.test
     def it_uses_the_app_loader_to_fetch_the_app_by_reference(self):
-        a_mount = Mount(dict(path='/', ref='dummy_app'))
+        a_mount = MountPointDescriptor(dict(path='/', ref='dummy_app'))
         fake_app = fudge.Fake('app').is_a_stub()
         fake_loader = (fudge.Fake('loader')
                             .expects('load')
@@ -38,7 +38,7 @@ class describe_load_app:
 
     @fudge.test
     def it_returns_a_cached_app_if_it_is_already_loaded(self):
-        a_mount = Mount(dict(path='/', ref='dummy_app'))
+        a_mount = MountPointDescriptor(dict(path='/', ref='dummy_app'))
         fake_app = fudge.Fake('app').is_a_stub()
         fake_loader = (fudge.Fake('loader')
                             .expects('load')

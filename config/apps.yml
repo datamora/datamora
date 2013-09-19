@@ -3,12 +3,12 @@ apps:
     ref: apps.index:app
   mounts:
     -
-      path: /streams
       ref: 'apps.fois'
+      path: /streams
       inject:
-          datastore: $master
+          datastore: $datastore:master
     -
-      path: /debug
       ref: apps.config_debugger
+      path: /debug
       config:
           scan: data

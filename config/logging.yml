@@ -11,6 +11,12 @@ logging:
     root:
         level: DEBUG
     loggers:
+        __main__:
+            level: INFO
+            handlers: [console]
+        bottling:
+            level: INFO
+            handlers: [console]
         sqlalchemy:
             level: INFO
             handlers: [console]
