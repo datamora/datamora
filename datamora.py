@@ -2,22 +2,20 @@ import logging
 import logging.config
 from bottle import Bottle, debug, run
 from bottling.config import load_settings
-from bottling.persistence import get_datastores, setup_datastores, init_datastores
-from bottling.factory import mount_all
 
-from pprint import pprint as pp
 
+
+# =========================================================
+# Bootstrap
+# =========================================================
 
 SERVER_DEFAULT_CONFIG = dict(host='localhost', port=8081, reloader=False, debug=False)
 
-
 datastores = None
-
 
 # load settings
 load_settings('config')
 from bottling.config import settings
-
 
 # setup logging
 if 'logging' in settings:
@@ -25,6 +23,14 @@ if 'logging' in settings:
 
 log = logging.getLogger(__name__)
 
+
+
+# =========================================================
+# Initialize
+# =========================================================
+
+from bottling.persistence import get_datastores, setup_datastores, init_datastores
+from bottling.factory import builder
 
 # setup datastores
 if 'datastore' in settings:
@@ -37,7 +43,7 @@ if 'datastore' in settings:
 app = None
 if 'apps' in settings:
     log.info('composing apps...')
-    app = compose(settings.get('apps'), settings)
+    app = builder.build(settings.get('apps'))
 
 
 # initialize datastores
@@ -46,9 +52,13 @@ if datastores:
     datastores.init()
 
 
+
+# =========================================================
+# Launch
+# =========================================================
+
 if __name__ == '__main__':
     server_config = SERVER_DEFAULT_CONFIG.copy()
-    print settings
     if 'server' in settings:
         server_config.update(settings.get('server', {}))
 

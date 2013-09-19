@@ -1,4 +1,4 @@
-from bottling.factory import Mount
+from bottling.factory import MountPointDescriptor
 
 
 class describe_init:
@@ -10,7 +10,7 @@ class describe_init:
             config = {'option':True}
         )
 
-        mount = Mount(mount_def)
+        mount = MountPointDescriptor(mount_def)
 
         assert mount.path == mount_def['path']
         assert mount.ref == mount_def['ref']
@@ -22,8 +22,17 @@ class describe_init:
             ref = 'reference.to.my:app'
         )
 
-        mount = Mount(mount_def)
+        mount = MountPointDescriptor(mount_def)
 
         assert mount.kind == None
         assert mount.config == None
         assert mount.inject == None
+
+    def it_defaults_to_root_path_if_none_given(self):
+        mount_def = dict(
+            ref = 'reference.to.my:app'
+        )
+
+        mount = MountPointDescriptor(mount_def)
+
+        assert mount.path == '/'
