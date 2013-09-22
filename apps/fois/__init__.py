@@ -24,9 +24,9 @@ from .models import Base
 from .controllers import TimeSeriesController
 
 
-logger = logging.getLogger(__name__)
-
 def create_app(config, datastore):
+    logger = logging.getLogger(__name__)
+
     app = Bottle()
 
     if config:

@@ -1,4 +1,4 @@
-datastore:
+datastores:
     master:
         ref: bottling.persistence.sqlalchemy_adapter
         config:
