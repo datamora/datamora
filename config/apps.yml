@@ -6,7 +6,7 @@ apps:
       ref: 'apps.fois'
       path: /streams
       inject:
-          datastore: $datastore:master
+          datastore: $datastores:master
     -
       ref: apps.config_debugger
       path: /debug

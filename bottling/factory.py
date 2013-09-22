@@ -14,8 +14,6 @@ import logging
 import bottle
 
 
-logger = logging.getLogger(__name__)
-
 # =========================================================
 # Parts and Builder
 # =========================================================
@@ -23,23 +21,28 @@ logger = logging.getLogger(__name__)
 class Builder(object):
     """Converts a stack of mount definitions into a stack of apps"""
 
-    def __init__(self, app_loaders, dependency_resolver):
+    def __init__(self, app_loaders, dependency_resolver, logger=None):
         self._loaders = app_loaders
         self._resolve = dependency_resolver
+        self._logger = logger or logging.getLogger(__name__)
         
     def build(self, composition_parts):
         root = bottle.Bottle()
         mount_defs = composition_parts['mounts']
         for mount_def in mount_defs:
             part = MountablePart(mount_def['ref'], mount_def)
-            logger.info('mounting %s at %s' % (part.ref, part.path))
-            deps = self._resolve(part.inject)
-            app_loader = self._loaders[part.kind]
 
-            app = app_loader(part.ref, part.config, deps)
-            
+            self._logger.info('Mounting %s at %s' % (part.ref, part.path))
+
+            app = self.get_app_for_part(part)
             root.mount(part.path, app)
         return root
+
+    def get_app_for_part(self, part):
+        deps = self._resolve(part.inject)
+        app_loader = self._loaders[part.kind]
+
+        return app_loader(part.ref, part.config, deps)
 
 
 class MountablePart(object):
