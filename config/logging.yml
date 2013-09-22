@@ -1,8 +1,11 @@
 logging:
     version: 1
+    disable_existing_loggers: False
     formatters:
+        verbose:
+            format: '%(levelname)s %(asctime)s %(name)s %(process)d %(thread)d %(message)s'
         simple:
-            format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            format: '%(levelname)s %(module)s: %(message)s'
     handlers:
         console:
             class: logging.StreamHandler
