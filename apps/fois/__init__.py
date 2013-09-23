@@ -32,8 +32,9 @@ def create_app(config, datastore):
     if config:
         app.config.update(config)
     
+    # install sa plugin and initialise db
     # app.install(datastore.plugin)
-    # _init_db(datastore.engine)
+    # Base.metadata.create_all(datastore.engine)
 
     @app.get('/')
     @view('index')
@@ -67,9 +68,6 @@ def create_app(config, datastore):
         
     return app
 
-
-def _init_db(engine):
-    Base.metadata.create_all(engine)
 
 def _stream_dto_from_request(request):
     key = request.POST.get('key')
