@@ -15,8 +15,7 @@ from bottling.factory import builder
 def main(config_dir='config'):
 
     # load settings
-    load_settings(config_dir)
-    from bottling.config import settings
+    settings = load_settings(config_dir)
 
     # setup logging
     if 'logging' in settings:
