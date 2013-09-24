@@ -5,7 +5,7 @@ from bottle import Bottle, debug, run
 
 from bottling.config import load_settings
 from bottling.persistence import get_datastores, setup_datastores, init_datastores
-from bottling.factory import builder
+from bottling.factory import builder, ConfigBasedResolver
 
 
 # =========================================================
@@ -26,21 +26,17 @@ def main(config_dir='config'):
 
     # setup datastores
     datastores = None
-    if 'datastore' in settings:
+    if 'datastores' in settings:
         logger.info('Setting up datastores...')
         # setup_datastores(settings['datastores'])
-        datastores = get_datastores(settings['datastore'])
+        datastores = get_datastores(settings['datastores'])
 
     # create root app and mount sub apps
     app = None
     if 'apps' in settings:
         logger.info('Composing apps...')
-        app = builder.build(settings.get('apps'))
-
-    # initialize datastores
-    if datastores:
-        logger.info('Initializing datastores...')
-        datastores.init()
+        resolver = ConfigBasedResolver(datastores=datastores)
+        app = builder.build(settings.get('apps'), resolver)
 
     # configure server and run
     server_config = dict(host='localhost', port=8081, reloader=False, debug=False)
@@ -52,6 +48,7 @@ def main(config_dir='config'):
     logger.info('Starting server...')
 
     run(app=app, host=server_config['host'], port=server_config['port'], reloader=server_config['reloader'])
+
 
 
 # =========================================================
