@@ -21,12 +21,11 @@ import bottle
 class Builder(object):
     """Converts a stack of mount definitions into a stack of apps"""
 
-    def __init__(self, app_loaders, dependency_resolver, logger=None):
+    def __init__(self, app_loaders, logger=None):
         self._loaders = app_loaders
-        self._resolve = dependency_resolver
         self._logger = logger or logging.getLogger(__name__)
         
-    def build(self, composition_parts):
+    def build(self, composition_parts, dependency_resolver):
         root = bottle.Bottle()
         mount_defs = composition_parts['mounts']
         for mount_def in mount_defs:
@@ -34,12 +33,12 @@ class Builder(object):
 
             self._logger.info('Mounting %s at %s' % (part.ref, part.path))
 
-            app = self.get_app_for_part(part)
+            app = self.get_app_for_part(part, dependency_resolver)
             root.mount(part.path, app)
         return root
 
-    def get_app_for_part(self, part):
-        deps = self._resolve(part.inject)
+    def get_app_for_part(self, part, dependency_resolver):
+        deps = dependency_resolver.resolve(part.deps)
         app_loader = self._loaders[part.kind]
 
         return app_loader(part.ref, part.config, deps)
@@ -52,7 +51,7 @@ class MountablePart(object):
         self.ref = options['ref']
         self.path = options.get('path', '/')
         self.config = options.get('config')
-        self.inject = options.get('inject')
+        self.deps = options.get('deps')
         self._kind = options.get('kind')
 
     @property
@@ -104,9 +103,28 @@ def load_singleton_app(ref, config=None, deps=None):
     return app
 
 
-def resolve(dependencies):
-    return dependencies if dependencies else {}
+class ConfigBasedResolver(object):
+    """Resolvs dependencies by mapping references to config based instances"""
+    def __init__(self, **kwargs):
+        self._logger = kwargs.get('logger') or logging.getLogger(__name__)
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
 
+    def resolve(self, dependencies):
+        instances = {}
+        if not dependencies:
+            return instances
+
+        for handle in dependencies:
+            dep = dependencies[handle]
+            if dep.startswith('$'):
+                area = dep[1:].split(':')[0]
+                key = dep[1:].split(':')[1]
+                pointers = getattr(self, area)
+                instance = getattr(pointers, key)
+                instances[handle] = instance
+
+        return instances
 
 
 
@@ -150,4 +168,4 @@ def register_views_dir(views_dir):
 # =========================================================
 
 app_loaders = {Kind.SINGLETON:load_singleton_app, Kind.PLUGGABLE:load_pluggable_app}
-builder = Builder(app_loaders, resolve)
+builder = Builder(app_loaders)

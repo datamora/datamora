@@ -33,8 +33,9 @@ def create_app(config, datastore):
         app.config.update(config)
     
     # install sa plugin and initialise db
-    # app.install(datastore.plugin)
-    # Base.metadata.create_all(datastore.engine)
+    logger.info('Initialising database...')
+    app.install(datastore.plugin)
+    Base.metadata.create_all(datastore.engine)
 
     @app.get('/')
     @view('index')
