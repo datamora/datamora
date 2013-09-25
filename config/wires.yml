@@ -1,0 +1,16 @@
+datastores.master.engine:
+    create: 
+        from: sqlalchemy:create_engine()
+        args:
+            dsn: "sqlite:///:memory:"
+            echo: False
+datastores.master.plugin:
+    create: 
+        from: bottle.ext.sqlalchemy.Plugin()
+        args:
+            engine: 
+                $ref: datastores.master.engine
+            keyword: db
+            create: False
+            commit: True
+            use_kwargs: True
