@@ -1,12 +1,12 @@
 datastores.master.engine:
     create: 
-        from: sqlalchemy:create_engine()
+        source: sqlalchemy:create_engine(url, echo=echo)
         args:
-            dsn: "sqlite:///:memory:"
+            url: "sqlite:///:memory:"
             echo: False
 datastores.master.plugin:
     create: 
-        from: bottle.ext.sqlalchemy.Plugin()
+        source: bottle.ext.sqlalchemy:Plugin(engine, keyword=keyword)
         args:
             engine: 
                 $ref: datastores.master.engine
