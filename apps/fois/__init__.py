@@ -20,11 +20,14 @@ Entry:
 """
 import logging
 from bottle import Bottle, view, request, response, HTTPError
+from bottle.ext import sqlalchemy
+from sqlalchemy import create_engine
+
 from .models import Base
 from .controllers import TimeSeriesController
 
 
-def create_app(config, datastore):
+def create_app(config=None, sa_plugin=None, sa_engine=None):
     logger = logging.getLogger(__name__)
 
     app = Bottle()
@@ -34,8 +37,15 @@ def create_app(config, datastore):
     
     # install sa plugin and initialise db
     logger.info('Initialising database...')
-    app.install(datastore.plugin)
-    Base.metadata.create_all(datastore.engine)
+
+    if not sa_engine:
+        sa_engine = create_engine('sqlite:///:memory:', echo=True)
+    if not sa_plugin:
+        sa_plugin_config = dict(keyword='db', create=False, commit=True, use_kwargs=True)
+        sa_plugin = sqlalchemy.Plugin(sa_engine, **sa_plugin_config)
+
+    app.install(sa_plugin)
+    Base.metadata.create_all(sa_engine)
 
     @app.get('/')
     @view('index')

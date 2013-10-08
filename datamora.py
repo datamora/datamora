@@ -1,11 +1,12 @@
 import logging
 import logging.config
 
-from bottle import Bottle, debug, run
+from sqlalchemy import create_engine
 
+from bottle import Bottle, debug, run
 from bottling.config import load_settings
-from bottling.persistence import get_datastores, setup_datastores, init_datastores
-from bottling.factory import builder, ConfigBasedResolver
+
+from apps import index, config_debugger, fois
 
 
 # =========================================================
@@ -24,19 +25,19 @@ def main(config_dir='config'):
     logger = logging.getLogger(__name__)
     logger.info('Settings loaded, bootstrapping...')
 
-    # setup datastores
-    datastores = None
-    if 'datastores' in settings:
-        logger.info('Setting up datastores...')
-        # setup_datastores(settings['datastores'])
-        datastores = get_datastores(settings['datastores'])
+    # setup data access
+    engine = None
+    if 'sqlalchemy' in settings:
+        logger.info('Setting up data access...')
+        engine_config = settings['sqlalchemy']['master']
+        engine = create_engine(engine_config['url'], echo=engine_config['echo'])
 
     # create root app and mount sub apps
-    app = None
-    if 'apps' in settings:
-        logger.info('Composing apps...')
-        resolver = ConfigBasedResolver(datastores=datastores)
-        app = builder.build(settings.get('apps'), resolver)
+    logger.info('Composing apps...')
+    app = index.app
+    app.mount('/debug', config_debugger.create_app())
+    app.mount('/streams', fois.create_app(sa_engine = engine))
+    
 
     # configure server and run
     server_config = dict(host='localhost', port=8081, reloader=False, debug=False)

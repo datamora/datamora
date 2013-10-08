@@ -16,6 +16,6 @@ app.config.update(DEFAULT_SETTINGS)
 @app.route('/')
 def index():
     return """
-    <h1>{{title}}</h1>
-    <p>{{message}}</p>
+    <h1>%s</h1>
+    <p>%s</p>
     """ % (app.config['title'], app.config['message'])
