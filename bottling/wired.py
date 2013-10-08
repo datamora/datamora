@@ -1,36 +1,52 @@
 import sys
 
 
-class Context(object):
+class Container(object):
     """Accepts a specification for wiring up components and provides methods for 
     materializing that spec as compnent instances"""
 
-    def __init__(self, spec, loader=None):
+    def __init__(self, context, loader=None):
         """
-        :param wire_spec: `dict`
+        :param context: ``class:Context``
         :param loader: a callable that handles the actual loading/importing of components
         """
-        self._spec = spec
+        self._context = context
         self._load = loader if loader else load
         self._components = {}
-
-    def register(self, ref, component):
-        self._components[ref] = component
-        return component
+        self._factories = {}
 
     def get(self, ref):
         if self._components.has_key(ref):
             return self._components[ref]
-        return self.register(ref, self.resolve(ref))
+        
+        if self._factories.has_key(ref):
+            component = self._factories[ref](self)
+            self._components[ref] = component
+            return component
+        
+        factory = self._context.get_factory(ref)
+        self.add_reference(ref, factory)
+        component = factory(self)
+        self._components[ref] = component
+        return component
+
+    def add_reference(self, ref, factory):
+        self._factories[ref] = factory
+
+    def materialize(self, directive):
+        definition = directive['create']
+        source = definition['source']
+        args = definition.get('args', {})
+        return self.load(source, args)
 
     def resolve(self, ref):
-        if not self._spec.has_key(ref):
+        if not self._context.has_key(ref):
             raise UnknownDirectiveIdError()
 
-        factory = self._spec.get_factory(ref)
-        return factory.create()
+        factory = self._context.get_factory(ref)
+        return factory()
 
-        directive = self._spec[ref]
+        directive = self._context[ref]
         definition = directive['create']
         source = definition['source']
         args = definition.get('args', {})
@@ -42,17 +58,34 @@ class Context(object):
         return self._load(source, **args)
 
 
-class Specification(object):
+class Context(object):
     """Represents a context-scoped specification for wiring up components 
     and provides the relevant factories for materializing component instances
     for individual directives within the specification"""
 
-    def __init__(self, data):
-        self._data = data
+    def __init__(self, spec):
+        self._spec = spec
+
+    def materialize(self, ref):
+        directive = self._spec[ref]
+        definition = directive['create']
+        source = definition['source']
+        args = definition.get('args', {})
+        return self.load(source, args)
+
+    def register(self, directive, factory):
+        """Registers a handler that can  """
 
     def get_factory(self, ref):
         """Returns the relvant factory for the given directive id"""
-        directive = self._data[ref]
+        directive = self._spec[ref]
+
+
+
+class SimpleCreateFactory(object):
+    def create(self):
+        return 
+
 
 
 class UnknownDirectiveIdError(Exception):
@@ -82,8 +115,7 @@ def load(target, **namespace):
 
 
 c4 = Container({
-    hello: 'You have been "Hello"ed!',
-    engine: {
+    'engine': {
         'create': {
             'source': 'sqlalchemy:create_engine(url, echo=echo)',
             'args': {
@@ -92,5 +124,11 @@ c4 = Container({
             }
         }
     },
-
+    'greeting': 'You have been "Hello"ed!',
+    'greeter': {
+        'create': {
+            'source': 'bottling.wired:Greeter',
+            'args': { 'greeting': { $ref:'greeting'} }
+        }
+    }
 })

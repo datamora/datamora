@@ -24,20 +24,8 @@ class describe_Container_given_simple_spec_for_function_call:
         assert thing['name'] == 'Spkolorak'
 
 
-class describe_Loader:
 
-    @fudge.test
-    def it_uses_a_resolver_to_load_a_reference(self):
-        my_module = 'my_package.my_module'
-        fake_resolver = (fudge.Fake('resolver')
-                                .expects_call()
-                                .with_args(my_module))
-        l = Loader(fake_resolver)
-
-        l.load(my_module)
-
-
-class escribe_load:
+class describe_load:
 
     @fudge.patch('bottle.load')
     def it_loads_a_module_by_reference(self, bottle_load):
