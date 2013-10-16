@@ -13,7 +13,7 @@ from apps import index, config_debugger, fois
 # Launcher
 # =========================================================
 
-def main(config_dir='config'):
+def main(config_dir='config/default/'):
 
     # load settings
     settings = load_settings(config_dir)
@@ -31,7 +31,10 @@ def main(config_dir='config'):
     engine = None
     if 'sqlalchemy' in settings:
         logger.info('Setting up data access...')
+
         engine_config = settings['sqlalchemy']['master']
+        logger.info('Creating sqlalchemy engine with url: %s and echo: %s ...' %
+                        (engine_config['url'], engine_config['echo']))
         engine = create_engine(engine_config['url'], echo=engine_config['echo'])
 
 

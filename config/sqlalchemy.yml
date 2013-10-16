@@ -1,4 +1,0 @@
-sqlalchemy:
-    master:
-        url: "sqlite:///foo.db"
-        echo: False
