@@ -1,4 +1,4 @@
 sqlalchemy:
     master:
-        url: "sqlite:///:memory:"
+        url: "sqlite:///foo.db"
         echo: False

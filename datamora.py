@@ -18,12 +18,14 @@ def main(config_dir='config'):
     # load settings
     settings = load_settings(config_dir)
 
+
     # setup logging
     if 'logging' in settings:
         logging.config.dictConfig(settings.get('logging'))
 
     logger = logging.getLogger(__name__)
     logger.info('Settings loaded, bootstrapping...')
+
 
     # setup data access
     engine = None
@@ -32,11 +34,16 @@ def main(config_dir='config'):
         engine_config = settings['sqlalchemy']['master']
         engine = create_engine(engine_config['url'], echo=engine_config['echo'])
 
+
     # create root app and mount sub apps
     logger.info('Composing apps...')
+
     app = index.app
+
     app.mount('/debug', config_debugger.create_app())
-    app.mount('/streams', fois.create_app(sa_engine = engine))
+
+    app.mount('/streams', fois.app)
+    fois.init(engine)
     
 
     # configure server and run

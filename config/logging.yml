@@ -5,7 +5,7 @@ logging:
         verbose:
             format: '%(levelname)s %(asctime)s %(name)s %(process)d %(thread)d %(message)s'
         simple:
-            format: '%(levelname)s %(module)s: %(message)s'
+            format: '%(levelname)s %(name)s %(module)s: %(message)s'
     handlers:
         console:
             class: logging.StreamHandler
